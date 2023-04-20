@@ -1,6 +1,6 @@
 import User from "../models/User.js";
 import generateId from "../helpers/generateId.js";
-import generateJWS from "../helpers/generateJWS.js";
+import generateJWT from "../helpers/generateJWT.js";
 import { emailRecovery, emailRegister } from "../helpers/email.js";
 
 // Registro de usuario
@@ -57,7 +57,7 @@ const authenticateUser = async (req, res) => {
       _id: user._id,
       nombre: user.nombre,
       email: user.email,
-      token: generateJWS(user._id),
+      token: generateJWT(user._id),
     });
   } else {
     const error = new Error("The password is incorrect");
