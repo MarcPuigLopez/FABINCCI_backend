@@ -8,6 +8,10 @@ const userSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
+    apellidos: {
+      type: String,
+      required: true,
+    },
     password: {
       type: String,
       required: true,
@@ -18,6 +22,11 @@ const userSchema = mongoose.Schema(
       required: true,
       trim: true,
       unique: true,
+    },
+    telefono: {
+      type: String,
+      required: false,
+      trim: true,
     },
     token: {
       type: String,
