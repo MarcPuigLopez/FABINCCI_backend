@@ -57,3 +57,39 @@ export const emailRecovery = async (datos) => {
         `,
   });
 };
+
+export const emailReservationRegister = async (datos) => {
+  const { email, nombre, apellidos, corte, fecha, hora } = datos;
+
+  const transport = nodemailer.createTransport({
+    host: process.env.MAIL_HOST,
+    port: process.env.MAIL_PORT,
+    auth: {
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PASS,
+    },
+  });
+
+  // Información del email
+
+  const info = await transport.sendMail({
+    from: '"Fabincci BarberShop" <admin@fabincci.com>',
+    to: email,
+    subject: "Has reservado una cita",
+    text: "Has reservado una cita",
+    html: ` <p> Hola ${nombre}. ¡Acabas de realizar una reserva para un corte ${corte}!</p>
+        <p>A continuación tienes la información de tu reserva:</p>
+        <a> Nombre: ${nombre} ${apellidos}</a>
+        <a> Tipo de corte: ${corte}</a>
+        <a> El dia: ${fecha}</a>
+        <a> A las: ${hora}</a>
+        <br/>
+        <a>Para modificar tu cita puedes acceder a tu perfil en el siguiente enlace</a>
+        <a>o contactar con Fabincci al siguiente número: 999888777</a>
+        <a href="${process.env.FRONTEND_URL}/profile">Ir a mi perfil</a>
+        
+        <p>Si no has hecho la reserva, puedes ignorar este mensaje.</p>
+
+        `,
+  });
+};
