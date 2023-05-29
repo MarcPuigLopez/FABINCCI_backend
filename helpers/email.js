@@ -59,7 +59,7 @@ export const emailRecovery = async (datos) => {
 };
 
 export const emailReservationRegister = async (datos) => {
-  const { email, nombre, apellidos, corte, fecha, hora } = datos;
+  const { email, nombre, apellidos, corte, fecha } = datos;
 
   const transport = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
@@ -79,10 +79,9 @@ export const emailReservationRegister = async (datos) => {
     text: "Has reservado una cita",
     html: ` <p> Hola ${nombre}. ¡Acabas de realizar una reserva para un corte ${corte}!</p>
         <p>A continuación tienes la información de tu reserva:</p>
-        <a> Nombre: ${nombre} ${apellidos}</a>
-        <a> Tipo de corte: ${corte}</a>
-        <a> El dia: ${fecha}</a>
-        <a> A las: ${hora}</a>
+        <a> Nombre: ${nombre} ${apellidos} <br/></a>
+        <a> Tipo de corte: ${corte} <br/></a>
+        <a> El dia: ${fecha} </a>
         <br/>
         <a>Para modificar tu cita puedes acceder a tu perfil en el siguiente enlace</a>
         <a>o contactar con Fabincci al siguiente número: 999888777</a>

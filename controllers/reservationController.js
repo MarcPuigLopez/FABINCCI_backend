@@ -5,40 +5,61 @@ import Reservation from "../models/Reservation.js";
 // Email configuration
 import { emailReservationRegister } from "../helpers/email.js";
 
-// Get reservations of a month
-const getReservations = async (req, res) => {
-  const { email } = req;
-  const userConfirm = await User.findOne({ email });
+// Get reservations of a user
+const getUserReservations = async (req, res) => {
+  const { email } = req.params;
 
-  // Comprobar si el usuario existe
-  if (!userConfirm) {
-    const error = new Error("El usuario no existe");
-    return res.status(404).json({ msg: error.message });
-  }
+  try {
+    const userConfirm = await User.findOne({ email });
 
-  const reservations = await Reservation.find(
-    { email },
-    (err, reservations) => {
-      if (err) {
-        return res.status(400).json({ msg: "Ha ocurrido un error" });
-      } else {
-        return res.json(reservations);
-      }
+    // Comprobar si el usuario existe
+    if (!userConfirm) {
+      const error = new Error("El usuario no existe");
+      return res.status(404).json({ msg: error.message });
     }
-  );
+
+    const reservations = await Reservation.find({ email });
+    return res.json(reservations);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ msg: "Ha ocurrido un error" });
+  }
+};
+
+// Get reservations of a month
+const getMonthReservations = async (req, res) => {
+  const { fecha } = req.params;
+  const [year, month, day] = fecha.split("-");
+
+  try {
+    // Obtener dias del mes actual
+    const startOfMonth = new Date(year, month - 1, 1);
+    const endOfMonth = new Date(year, month, 0);
+
+    const reservations = await Reservation.find({
+      fecha: {
+        $gte: startOfMonth,
+        $lte: endOfMonth,
+      },
+    });
+
+    return res.json(reservations);
+  } catch {
+    console.log(error);
+    res.status(400).json({ msg: "Ha ocurrido un error" });
+  }
 };
 
 // Registrar una reserva
 const addReservation = async (req, res) => {
   // Evitar registros duplicados
-  const { fecha, hora } = req.body;
-  const reservationExists = await Reservation.findOne({ fecha, hora });
+  const { fecha } = req.body;
+  const reservationExists = await Reservation.findOne({ fecha });
 
-  if (!reservationExists.confirmed) {
+  if (reservationExists != null && reservationExists.confirmed) {
     const error = new Error("Este dia ya ha sido reservado");
     return res.status(400).json({ msg: error.message });
   }
-
   try {
     const reservation = new Reservation(req.body);
     reservation.confirmed = true;
@@ -46,15 +67,12 @@ const addReservation = async (req, res) => {
     res.json({
       msg: "Reserva creada correctamente",
     });
-
     // Enviar mail de confirmación
     emailReservationRegister({
       email: reservationSaved.email,
       nombre: reservationSaved.nombre,
       apellidos: reservationSaved.apellidos,
-      corte: reservationSaved.corte,
       fecha: reservationSaved.fecha,
-      hora: reservationSaved.hora,
     });
   } catch (error) {
     console.log(error);
@@ -64,6 +82,9 @@ const addReservation = async (req, res) => {
 
 const modifyReservation = async (req, res) => {};
 
-const profileUser = async (req, res) => {};
-
-export { getReservations, addReservation, modifyReservation };
+export {
+  getUserReservations,
+  getMonthReservations,
+  addReservation,
+  modifyReservation,
+};

@@ -2,17 +2,16 @@ import express from "express";
 const router = express.Router();
 
 import {
+  getUserReservations,
+  getMonthReservations,
   addReservation,
-  getReservations,
   modifyReservation,
-  profileUser,
 } from "../controllers/reservationController.js";
 
-import checkAuth from "../middleware/checkAuth.js";
-
 // Post, get and put routes
-router.post("/reservation", addReservation);
-router.get("/reservations/:token", getReservations);
-router.put("/reservation", modifyReservation);
+router.post("/", addReservation);
+router.get("/user/:email", getUserReservations);
+router.get("/month/:fecha", getMonthReservations);
+router.put("/modify", modifyReservation);
 
 export default router;
