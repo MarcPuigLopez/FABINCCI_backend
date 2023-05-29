@@ -61,7 +61,9 @@ const authenticateUser = async (req, res) => {
     res.json({
       _id: user._id,
       nombre: user.nombre,
+      apellidos: user.apellidos,
       email: user.email,
+      telefono: user.telefono,
       token: generateJWT(user._id),
     });
   } else {

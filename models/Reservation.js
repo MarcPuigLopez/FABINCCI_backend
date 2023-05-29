@@ -2,16 +2,9 @@ import mongoose from "mongoose";
 
 const reservationSchema = mongoose.Schema(
   {
-    nombre: {
-      type: String,
-      trim: true,
-    },
-    apellidos: {
-      type: String,
-    },
-    email: {
-      type: String,
-      trim: true,
+    usuario: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Usuario",
     },
     fecha: {
       type: Date,
@@ -25,9 +18,6 @@ const reservationSchema = mongoose.Schema(
     confirmed: {
       type: Boolean,
       default: false,
-    },
-    token: {
-      type: String,
     },
   },
   {

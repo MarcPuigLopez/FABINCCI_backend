@@ -7,10 +7,10 @@ import { emailReservationRegister } from "../helpers/email.js";
 
 // Get reservations of a user
 const getUserReservations = async (req, res) => {
-  const { email } = req.params;
+  const _id = req.user._id;
 
   try {
-    const userConfirm = await User.findOne({ email });
+    const userConfirm = await User.findOne({ _id });
 
     // Comprobar si el usuario existe
     if (!userConfirm) {
@@ -18,7 +18,8 @@ const getUserReservations = async (req, res) => {
       return res.status(404).json({ msg: error.message });
     }
 
-    const reservations = await Reservation.find({ email });
+    const reservations = await Reservation.find({ usuario: _id });
+    console.log(reservations);
     return res.json(reservations);
   } catch (error) {
     console.log(error);
@@ -63,17 +64,20 @@ const addReservation = async (req, res) => {
   try {
     const reservation = new Reservation(req.body);
     reservation.confirmed = true;
+    reservation.usuario = req.user._id;
     const reservationSaved = await reservation.save();
     res.json({
       msg: "Reserva creada correctamente",
     });
+
+    const user = await User.findById(req.user._id);
     // Enviar mail de confirmación
-    emailReservationRegister({
-      email: reservationSaved.email,
-      nombre: reservationSaved.nombre,
-      apellidos: reservationSaved.apellidos,
-      fecha: reservationSaved.fecha,
-    });
+      emailReservationRegister({
+        email: user.email,
+        nombre: user.nombre,
+        apellidos: user.apellidos,
+        fecha: reservationSaved.fecha,
+      });
   } catch (error) {
     console.log(error);
     res.status(400).json({ msg: "Ha ocurrido un error" });
