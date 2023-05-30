@@ -165,6 +165,24 @@ const profileUser = async (req, res) => {
   res.json(user);
 };
 
+const modifyUser = async (req, res) => {
+  const { user } = req;
+  const { name, apellidos, email, phone } = req.body;
+
+  user.name = name;
+  user.apellidos = apellidos;
+  user.email = email;
+  user.phone = phone;
+
+  try {
+    await user.save();
+    res.json({ msg: "Usuario modificado correctamente" });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ msg: "Ha ocurrido un error" });
+  }
+};
+
 export {
   registerUser,
   authenticateUser,
@@ -173,4 +191,5 @@ export {
   matchToken,
   newPassword,
   profileUser,
+  modifyUser,
 };

@@ -3,14 +3,14 @@ import User from "../models/User.js";
 import Reservation from "../models/Reservation.js";
 
 // Email configuration
-import { emailReservationRegister } from "../helpers/email.js";
+import { emailReservationRegister, emailReservationDelete } from "../helpers/email.js";
 
 // Get reservations of a user
 const getUserReservations = async (req, res) => {
   const _id = req.user._id;
 
   try {
-    const userConfirm = await User.findOne({ _id });
+    const userConfirm = await User.findById({ _id });
 
     // Comprobar si el usuario existe
     if (!userConfirm) {
@@ -72,12 +72,12 @@ const addReservation = async (req, res) => {
 
     const user = await User.findById(req.user._id);
     // Enviar mail de confirmación
-      emailReservationRegister({
-        email: user.email,
-        nombre: user.nombre,
-        apellidos: user.apellidos,
-        fecha: reservationSaved.fecha,
-      });
+    emailReservationRegister({
+      email: user.email,
+      nombre: user.nombre,
+      apellidos: user.apellidos,
+      fecha: reservationSaved.fecha,
+    });
   } catch (error) {
     console.log(error);
     res.status(400).json({ msg: "Ha ocurrido un error" });
@@ -86,9 +86,37 @@ const addReservation = async (req, res) => {
 
 const modifyReservation = async (req, res) => {};
 
+const deleteReservation = async (req, res) => {
+  const { id } = req.params;
+
+  const reservation = await Reservation.findById(id);
+
+  if (!reservation) {
+    const error = new Error("La reserva no existe");
+    return res.status(404).json({ msg: error.message });
+  }
+
+  const user = await User.findById(req.user._id);
+  emailReservationDelete({
+    email: user.email,
+    nombre: user.nombre,
+    apellidos: user.apellidos,
+    fecha: reservation.fecha,
+  });
+
+  try {
+    await reservation.deleteOne();
+    res.json({ msg: "Reserva eliminada correctamente" });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ msg: "Ha ocurrido un error" });
+  }
+};
+
 export {
   getUserReservations,
   getMonthReservations,
   addReservation,
   modifyReservation,
+  deleteReservation,
 };

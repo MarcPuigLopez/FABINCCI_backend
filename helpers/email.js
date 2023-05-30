@@ -1,5 +1,8 @@
 import nodemailer from "nodemailer";
 
+// Formato de fechas
+import moment from "moment";
+
 export const emailRegister = async (datos) => {
   const { email, nombre, token } = datos;
 
@@ -81,13 +84,46 @@ export const emailReservationRegister = async (datos) => {
         <p>A continuación tienes la información de tu reserva:</p>
         <a> Nombre: ${nombre} ${apellidos} <br/></a>
         <a> Tipo de corte: ${corte} <br/></a>
-        <a> El dia: ${fecha} </a>
+        <a> El dia: ${moment(fecha).format("DD-MM-YYYY")} </a>
+        <a> A las: ${moment(fecha).format("HH:mm")}</a>
         <br/>
         <a>Para modificar tu cita puedes acceder a tu perfil en el siguiente enlace</a>
         <a>o contactar con Fabincci al siguiente número: 999888777</a>
         <a href="${process.env.FRONTEND_URL}/profile">Ir a mi perfil</a>
         
         <p>Si no has hecho la reserva, puedes ignorar este mensaje.</p>
+
+        `,
+  });
+};
+
+export const emailReservationDelete = async (datos) => {
+  const { email, nombre, fecha } = datos;
+
+  const transport = nodemailer.createTransport({
+    host: process.env.MAIL_HOST,
+    port: process.env.MAIL_PORT,
+    auth: {
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PASS,
+    },
+  });
+
+  // Información del email
+
+  const info = await transport.sendMail({
+    from: '"Fabincci BarberShop" <admin@fabincci.com>',
+    to: email,
+    subject: "Has cancelado tu cita",
+    text: "Has cancelado tu cita",
+    html: ` <p> Hola ${nombre}. ¡Acabas de cancelar tu reserva del dia ${moment(
+      fecha
+    ).format("DD-MM")}!</p>
+        <p> Lamentamos que no puedas asistir a tu corte.</p>
+        <p> A continuación tienes un link para hacer una nueva reserva:</p>
+        <a href="${process.env.FRONTEND_URL}/profile">Ir a mi perfil</a>
+        <br/>
+        <a> ¡Esperamos verte pronto en FABINCCI!</a>
 
         `,
   });
