@@ -1,7 +1,9 @@
+
+// Generación del ID dpara el usuario
 const generateId = () => {
-    const reandom = Math.random().toString(32).substring(2);
+    const random = Math.random().toString(32).substring(2);
     const timestamp = Date.now().toString(32);
-    return reandom + timestamp;
+    return random + timestamp;
 }
 
 export default generateId

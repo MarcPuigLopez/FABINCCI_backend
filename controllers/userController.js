@@ -3,7 +3,10 @@ import User from "../models/User.js";
 
 // Generators helpers
 import generateId from "../helpers/generateId.js";
-import generateJWT from "../helpers/generateJWT.js";
+import generateJWT, { generateJWTShort} from "../helpers/generateJWT.js";
+
+// import JWT library
+import jwt from "jsonwebtoken";
 
 // Email configuration
 import { emailRecovery, emailRegister } from "../helpers/email.js";
@@ -41,7 +44,7 @@ const registerUser = async (req, res) => {
 
 // Autenticar el usuario
 const authenticateUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, rememberMe } = req.body;
 
   // Comprobar si el usuario existe
   const user = await User.findOne({ email });
@@ -58,14 +61,25 @@ const authenticateUser = async (req, res) => {
 
   // Comprobar si el password es correcto
   if (await user.matchPassword(password)) {
-    res.json({
-      _id: user._id,
-      nombre: user.nombre,
-      apellidos: user.apellidos,
-      email: user.email,
-      telefono: user.telefono,
-      token: generateJWT(user._id),
-    });
+    if (rememberMe) {
+      res.json({
+        _id: user._id,
+        nombre: user.nombre,
+        apellidos: user.apellidos,
+        email: user.email,
+        telefono: user.telefono,
+        token: generateJWT(user._id),
+      });
+    } else {
+      res.json({
+        _id: user._id,
+        nombre: user.nombre,
+        apellidos: user.apellidos,
+        email: user.email,
+        telefono: user.telefono,
+        token: generateJWTShort(user._id),
+      });
+    }
   } else {
     const error = new Error("La contraseña es incorrecta");
     return res.status(400).json({ msg: error.message });
@@ -159,24 +173,64 @@ const newPassword = async (req, res) => {
   }
 };
 
+
+// Funcion para verificar JWT
+function isTokenExpired(token) {
+  try {
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const currentTime = Date.now() / 1000; // Obtiene la fecha actual en segundos
+
+    // Compara la fecha de expiración del token con la fecha actual
+    if (decodedToken.exp < currentTime) {
+      return true; 
+    }
+
+    return false; 
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 const profileUser = async (req, res) => {
   const { user } = req;
+  
+  // Obtener el encabezado de autorización
+  const authHeader = req.headers.authorization;
+  
+  // Verificar si se proporcionó el encabezado de autorización
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Authorization header missing' });
+  }
+  
+  // Dividir el encabezado de autorización en partes
+  const [authType, token] = authHeader.split(' ');
+  
+  // Verificar si se proporcionó el token JWT
+  if (!token) {
+    return res.status(401).json({ error: 'JWT token missing' });
+  }
 
-  res.json(user);
+  // Verificar si el token ha expirado
+  if (isTokenExpired(token)) {
+    return res.status(401).json({ error: 'JWT token expired' });
+  } else {
+    res.json(user);
+  }
 };
 
 const modifyUser = async (req, res) => {
   const { user } = req;
-  const { name, apellidos, email, phone } = req.body;
+  const { nombre, apellidos, email, telefono } = req.body;
 
-  user.name = name;
+  console.log(nombre, apellidos, email, telefono );
+  user.nombre = nombre;
   user.apellidos = apellidos;
   user.email = email;
-  user.phone = phone;
+  user.telefono = telefono;
 
   try {
     await user.save();
-    res.json({ msg: "Usuario modificado correctamente" });
+    res.json(user);
   } catch (error) {
     console.log(error);
     res.status(400).json({ msg: "Ha ocurrido un error" });

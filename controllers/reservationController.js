@@ -3,7 +3,10 @@ import User from "../models/User.js";
 import Reservation from "../models/Reservation.js";
 
 // Email configuration
-import { emailReservationRegister, emailReservationDelete } from "../helpers/email.js";
+import {
+  emailReservationRegister,
+  emailReservationDelete,
+} from "../helpers/email.js";
 
 // Get reservations of a user
 const getUserReservations = async (req, res) => {
@@ -30,7 +33,7 @@ const getUserReservations = async (req, res) => {
 // Get reservations of a month
 const getMonthReservations = async (req, res) => {
   const { fecha } = req.params;
-  const [year, month, day] = fecha.split("-");
+  const [year, month] = fecha.split("-");
 
   try {
     // Obtener dias del mes actual
@@ -66,9 +69,7 @@ const addReservation = async (req, res) => {
     reservation.confirmed = true;
     reservation.usuario = req.user._id;
     const reservationSaved = await reservation.save();
-    res.json({
-      msg: "Reserva creada correctamente",
-    });
+    res.json(reservationSaved);
 
     const user = await User.findById(req.user._id);
     // Enviar mail de confirmación
