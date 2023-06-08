@@ -128,3 +128,35 @@ export const emailReservationDelete = async (datos) => {
         `,
   });
 };
+
+export const emailAdminReservationRegister = async (datos) => {
+  const { email, nombre, fecha } = datos;
+
+  const transport = nodemailer.createTransport({
+    host: process.env.MAIL_HOST,
+    port: process.env.MAIL_PORT,
+    auth: {
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PASS,
+    },
+  });
+
+  const info = await transport.sendMail({
+    from: '"Fabincci BarberShop" <admin@fabincci.com>',
+    to: email,
+    subject: "Se ha cancelado tu cita",
+    text: "Se ha cancelado tu cita",
+    html: ` <p> Hola ${nombre}. ¡Se ha cancelado tu reserva del dia ${moment(
+      fecha
+    ).format("DD-MM")}!</p>
+        <p> Por motivos personales se ha tenido que cancelar tu reserva, </br></p>
+        <p> Lamentamos las moléstias.</p>
+        <p> A continuación tienes un link para hacer una nueva reserva: </br></p>
+        </br>
+        <a href="${process.env.FRONTEND_URL}/profile">Ir a mi perfil</a>
+        <br/>
+        <a> ¡Esperamos verte pronto en FABINCCI!</a>
+
+        `,
+  });
+};

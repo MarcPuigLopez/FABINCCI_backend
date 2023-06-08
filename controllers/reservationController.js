@@ -22,7 +22,6 @@ const getUserReservations = async (req, res) => {
     }
 
     const reservations = await Reservation.find({ usuario: _id });
-    console.log(reservations);
     return res.json(reservations);
   } catch (error) {
     console.log(error);
@@ -68,17 +67,48 @@ const addReservation = async (req, res) => {
     const reservation = new Reservation(req.body);
     reservation.confirmed = true;
     reservation.usuario = req.user._id;
+    console.log("error");
     const reservationSaved = await reservation.save();
     res.json(reservationSaved);
 
     const user = await User.findById(req.user._id);
     // Enviar mail de confirmación
-    emailReservationRegister({
-      email: user.email,
-      nombre: user.nombre,
-      apellidos: user.apellidos,
-      fecha: reservationSaved.fecha,
-    });
+    // emailReservationRegister({
+    //   email: user.email,
+    //   nombre: user.nombre,
+    //   apellidos: user.apellidos,
+    //   fecha: reservationSaved.fecha,
+    // });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ msg: "Ha ocurrido un error" });
+  }
+};
+
+const addAdminReservation = async (req, res) => {
+  // Evitar registros duplicados
+  const { fecha, user } = req.body;
+  const reservationExists = await Reservation.findOne({ fecha });
+
+  if (reservationExists != null && reservationExists.confirmed) {
+    const error = new Error("Este dia ya ha sido reservado");
+    return res.status(400).json({ msg: error.message });
+  }
+  try {
+    const reservation = new Reservation(req.body);
+    reservation.confirmed = true;
+    reservation.usuario = user;
+    const reservationSaved = await reservation.save();
+    res.json(reservationSaved);
+
+    const userData = await User.findById(user);
+    // Enviar mail de confirmación
+    // emailAdminReservationRegister({
+    //   email: user.email,
+    //   nombre: user.nombre,
+    //   apellidos: user.apellidos,
+    //   fecha: reservationSaved.fecha,
+    // });
   } catch (error) {
     console.log(error);
     res.status(400).json({ msg: "Ha ocurrido un error" });
@@ -98,12 +128,12 @@ const deleteReservation = async (req, res) => {
   }
 
   const user = await User.findById(req.user._id);
-  emailReservationDelete({
-    email: user.email,
-    nombre: user.nombre,
-    apellidos: user.apellidos,
-    fecha: reservation.fecha,
-  });
+  // emailReservationDelete({
+  //   email: user.email,
+  //   nombre: user.nombre,
+  //   apellidos: user.apellidos,
+  //   fecha: reservation.fecha,
+  // });
 
   try {
     await reservation.deleteOne();
@@ -118,6 +148,8 @@ export {
   getUserReservations,
   getMonthReservations,
   addReservation,
+  addAdminReservation,
   modifyReservation,
   deleteReservation,
+  
 };

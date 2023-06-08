@@ -10,6 +10,7 @@ import {
   newPassword,
   profileUser,
   modifyUser,
+  getUsers,
 } from "../controllers/userController.js";
 
 import checkAuth from "../middleware/checkAuth.js";
@@ -23,5 +24,7 @@ router.route("/reset-password/:token").get(matchToken).post(newPassword);
 
 router.put("/profile", checkAuth, modifyUser);
 router.get("/profile", checkAuth, profileUser);
+
+router.get("/all", checkAuth, getUsers);
 
 export default router;

@@ -3,7 +3,7 @@ import User from "../models/User.js";
 
 // Generators helpers
 import generateId from "../helpers/generateId.js";
-import generateJWT, { generateJWTShort} from "../helpers/generateJWT.js";
+import generateJWT, { generateJWTShort } from "../helpers/generateJWT.js";
 
 // import JWT library
 import jwt from "jsonwebtoken";
@@ -31,11 +31,11 @@ const registerUser = async (req, res) => {
     });
 
     // Enviar email de confirmación
-    emailRegister({
-      email: userSaved.email,
-      nombre: userSaved.nombre,
-      token: userSaved.token,
-    });
+    // emailRegister({
+    //   email: userSaved.email,
+    //   nombre: userSaved.nombre,
+    //   token: userSaved.token,
+    // });
   } catch (error) {
     console.log(error);
     res.status(400).json({ msg: "Ha ocurrido un error" });
@@ -90,7 +90,6 @@ const authenticateUser = async (req, res) => {
 const confirmUser = async (req, res) => {
   const { token } = req.params;
   const userConfirm = await User.findOne({ token });
-  console.log(userConfirm);
   if (!userConfirm) {
     const error = new Error("El token no es válido");
     return res.status(403).json({ msg: error.message });
@@ -124,11 +123,11 @@ const forgotPassword = async (req, res) => {
     res.json({ msg: "Comprueba tu correo y sigue las instrucciones" });
 
     // Enviar email de recuperación
-    emailRecovery({
-      email: user.email,
-      nombre: user.nombre,
-      token: user.token,
-    });
+    // emailRecovery({
+    //   email: user.email,
+    //   nombre: user.nombre,
+    //   token: user.token,
+    // });
   } catch (error) {
     console.log(error);
     return res
@@ -173,7 +172,6 @@ const newPassword = async (req, res) => {
   }
 };
 
-
 // Funcion para verificar JWT
 function isTokenExpired(token) {
   try {
@@ -182,10 +180,10 @@ function isTokenExpired(token) {
 
     // Compara la fecha de expiración del token con la fecha actual
     if (decodedToken.exp < currentTime) {
-      return true; 
+      return true;
     }
 
-    return false; 
+    return false;
   } catch (error) {
     console.log(error);
   }
@@ -193,26 +191,26 @@ function isTokenExpired(token) {
 
 const profileUser = async (req, res) => {
   const { user } = req;
-  
+
   // Obtener el encabezado de autorización
   const authHeader = req.headers.authorization;
-  
+
   // Verificar si se proporcionó el encabezado de autorización
   if (!authHeader) {
-    return res.status(401).json({ error: 'Authorization header missing' });
+    return res.status(401).json({ error: "Authorization header missing" });
   }
-  
+
   // Dividir el encabezado de autorización en partes
-  const [authType, token] = authHeader.split(' ');
-  
+  const [authType, token] = authHeader.split(" ");
+
   // Verificar si se proporcionó el token JWT
   if (!token) {
-    return res.status(401).json({ error: 'JWT token missing' });
+    return res.status(401).json({ error: "JWT token missing" });
   }
 
   // Verificar si el token ha expirado
   if (isTokenExpired(token)) {
-    return res.status(401).json({ error: 'JWT token expired' });
+    return res.status(401).json({ error: "JWT token expired" });
   } else {
     res.json(user);
   }
@@ -222,7 +220,6 @@ const modifyUser = async (req, res) => {
   const { user } = req;
   const { nombre, apellidos, email, telefono } = req.body;
 
-  console.log(nombre, apellidos, email, telefono );
   user.nombre = nombre;
   user.apellidos = apellidos;
   user.email = email;
@@ -237,6 +234,17 @@ const modifyUser = async (req, res) => {
   }
 };
 
+const getUsers = async (req, res) => {
+  const users = await User.find();
+
+  try {
+    res.json(users);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ msg: "Ha habido un error" });
+  }
+};
+
 export {
   registerUser,
   authenticateUser,
@@ -246,4 +254,5 @@ export {
   newPassword,
   profileUser,
   modifyUser,
+  getUsers,
 };
