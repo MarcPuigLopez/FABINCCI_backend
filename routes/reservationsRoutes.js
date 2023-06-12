@@ -16,7 +16,7 @@ import checkAuth from "../middleware/checkAuth.js";
 router.post("/add", checkAuth, addReservation);
 router.post("/admin/add", addAdminReservation);
 router.get("/user", checkAuth, getUserReservations);
-router.get("/month/:fecha", checkAuth, getMonthReservations);
+router.get("/month/:date", checkAuth, getMonthReservations);
 router.put("/modify", checkAuth, modifyReservation);
 router.delete("/delete/:id", checkAuth, deleteReservation);
 

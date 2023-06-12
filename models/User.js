@@ -3,12 +3,12 @@ import bcrypt from "bcrypt";
 
 const userSchema = mongoose.Schema(
   {
-    nombre: {
+    name: {
       type: String,
       required: true,
       trim: true,
     },
-    apellidos: {
+    lastName: {
       type: String,
       required: true,
     },
@@ -54,5 +54,5 @@ userSchema.methods.matchPassword = async function (passwordForm) {
 };
 
 
-const User = mongoose.model("Usuario", userSchema);
+const User = mongoose.model("User", userSchema);
 export default User;

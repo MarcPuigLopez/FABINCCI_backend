@@ -4,7 +4,7 @@ import nodemailer from "nodemailer";
 import moment from "moment";
 
 export const emailRegister = async (datos) => {
-  const { email, nombre, token } = datos;
+  const { email, name, token } = datos;
 
   const transport = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
@@ -22,7 +22,7 @@ export const emailRegister = async (datos) => {
     to: email,
     subject: "Confirma tu cuenta",
     text: "Confirma tu cuenta",
-    html: ` <p> Hola ${nombre}. ¡Bienvenid@ al universo Fabincci!</p>
+    html: ` <p> Hola ${name}. ¡Bienvenid@ al universo Fabincci!</p>
         <p>Tu cuenta ya esta casi lista, solo debes confirmarla en el siguiente enlace:</p>
         <a href="${process.env.FRONTEND_URL}/users/confirm/${token}">Confirmar cuenta</a>
 
@@ -33,7 +33,7 @@ export const emailRegister = async (datos) => {
 };
 
 export const emailRecovery = async (datos) => {
-  const { email, nombre, token } = datos;
+  const { email, name, token } = datos;
 
   const transport = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
@@ -51,7 +51,7 @@ export const emailRecovery = async (datos) => {
     to: email,
     subject: "Recupera tu contraseña",
     text: "Recupera tu contraseña",
-    html: ` <p> Hola ${nombre}. ¡Bienvenid@ al universo Fabincci!</p>
+    html: ` <p> Hola ${name}. ¡Bienvenid@ al universo Fabincci!</p>
         <p>Para poder recuperar la contraseña, haz click en el enlace a continuación:</p>
         <a href="${process.env.FRONTEND_URL}/users/reset-password/${token}">Recuperar contraseña</a>
 
@@ -62,7 +62,7 @@ export const emailRecovery = async (datos) => {
 };
 
 export const emailReservationRegister = async (datos) => {
-  const { email, nombre, apellidos, corte, fecha } = datos;
+  const { email, name, lastName, cutType, date } = datos;
 
   const transport = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
@@ -80,12 +80,12 @@ export const emailReservationRegister = async (datos) => {
     to: email,
     subject: "Has reservado una cita",
     text: "Has reservado una cita",
-    html: ` <p> Hola ${nombre}. ¡Acabas de realizar una reserva para un corte ${corte}!</p>
+    html: ` <p> Hola ${name}. ¡Acabas de realizar una reserva para un corte ${cutType}!</p>
         <p>A continuación tienes la información de tu reserva:</p>
-        <a> Nombre: ${nombre} ${apellidos} <br/></a>
-        <a> Tipo de corte: ${corte} <br/></a>
-        <a> El dia: ${moment(fecha).format("DD-MM-YYYY")} </a>
-        <a> A las: ${moment(fecha).format("HH:mm")}</a>
+        <a> name: ${name} ${lastName} <br/></a>
+        <a> Tipo de corte: ${cutType} <br/></a>
+        <a> El dia: ${moment(date).format("DD-MM-YYYY")} </a>
+        <a> A las: ${moment(date).format("HH:mm")}</a>
         <br/>
         <a>Para modificar tu cita puedes acceder a tu perfil en el siguiente enlace</a>
         <a>o contactar con Fabincci al siguiente número: 999888777</a>
@@ -98,7 +98,7 @@ export const emailReservationRegister = async (datos) => {
 };
 
 export const emailReservationDelete = async (datos) => {
-  const { email, nombre, fecha } = datos;
+  const { email, name, date } = datos;
 
   const transport = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
@@ -116,8 +116,8 @@ export const emailReservationDelete = async (datos) => {
     to: email,
     subject: "Has cancelado tu cita",
     text: "Has cancelado tu cita",
-    html: ` <p> Hola ${nombre}. ¡Acabas de cancelar tu reserva del dia ${moment(
-      fecha
+    html: ` <p> Hola ${name}. ¡Acabas de cancelar tu reserva del dia ${moment(
+      date
     ).format("DD-MM")}!</p>
         <p> Lamentamos que no puedas asistir a tu corte.</p>
         <p> A continuación tienes un link para hacer una nueva reserva:</p>
@@ -130,7 +130,7 @@ export const emailReservationDelete = async (datos) => {
 };
 
 export const emailAdminReservationRegister = async (datos) => {
-  const { email, nombre, fecha } = datos;
+  const { email, name, date } = datos;
 
   const transport = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
@@ -146,8 +146,8 @@ export const emailAdminReservationRegister = async (datos) => {
     to: email,
     subject: "Se ha cancelado tu cita",
     text: "Se ha cancelado tu cita",
-    html: ` <p> Hola ${nombre}. ¡Se ha cancelado tu reserva del dia ${moment(
-      fecha
+    html: ` <p> Hola ${name}. ¡Se ha cancelado tu reserva del dia ${moment(
+      date
     ).format("DD-MM")}!</p>
         <p> Por motivos personales se ha tenido que cancelar tu reserva, </br></p>
         <p> Lamentamos las moléstias.</p>

@@ -11,7 +11,7 @@ import jwt from "jsonwebtoken";
 // Email configuration
 import { emailRecovery, emailRegister } from "../helpers/email.js";
 
-// Registro de usuario
+// Registro de user
 const registerUser = async (req, res) => {
   // Evitar registros duplicados
   const { email } = req.body;
@@ -31,29 +31,29 @@ const registerUser = async (req, res) => {
     });
 
     // Enviar email de confirmación
-    // emailRegister({
-    //   email: userSaved.email,
-    //   nombre: userSaved.nombre,
-    //   token: userSaved.token,
-    // });
+    emailRegister({
+      email: userSaved.email,
+      name: userSaved.name,
+      token: userSaved.token,
+    });
   } catch (error) {
     console.log(error);
     res.status(400).json({ msg: "Ha ocurrido un error" });
   }
 };
 
-// Autenticar el usuario
+// Autenticar el user
 const authenticateUser = async (req, res) => {
   const { email, password, rememberMe } = req.body;
 
-  // Comprobar si el usuario existe
+  // Comprobar si el user existe
   const user = await User.findOne({ email });
   if (!user) {
     const error = new Error("El usuario no existe");
     return res.status(404).json({ msg: error.message });
   }
 
-  // Combrobar si el usuario esta confirmado
+  // Combrobar si el user esta confirmado
   if (!user.confirmed) {
     const error = new Error("El usuario no ha sido confirmado");
     return res.status(403).json({ msg: error.message });
@@ -64,8 +64,8 @@ const authenticateUser = async (req, res) => {
     if (rememberMe) {
       res.json({
         _id: user._id,
-        nombre: user.nombre,
-        apellidos: user.apellidos,
+        name: user.name,
+        lastName: user.lastName,
         email: user.email,
         telefono: user.telefono,
         token: generateJWT(user._id),
@@ -73,8 +73,8 @@ const authenticateUser = async (req, res) => {
     } else {
       res.json({
         _id: user._id,
-        nombre: user.nombre,
-        apellidos: user.apellidos,
+        name: user.name,
+        lastName: user.lastName,
         email: user.email,
         telefono: user.telefono,
         token: generateJWTShort(user._id),
@@ -86,7 +86,7 @@ const authenticateUser = async (req, res) => {
   }
 };
 
-// Confirmación de usuario
+// Confirmación de user
 const confirmUser = async (req, res) => {
   const { token } = req.params;
   const userConfirm = await User.findOne({ token });
@@ -113,7 +113,7 @@ const forgotPassword = async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
-    const error = new Error("El usuariono existe");
+    const error = new Error("El usuario no existe");
     return res.status(400).json({ msg: error.message });
   }
 
@@ -123,11 +123,11 @@ const forgotPassword = async (req, res) => {
     res.json({ msg: "Comprueba tu correo y sigue las instrucciones" });
 
     // Enviar email de recuperación
-    // emailRecovery({
-    //   email: user.email,
-    //   nombre: user.nombre,
-    //   token: user.token,
-    // });
+    emailRecovery({
+      email: user.email,
+      name: user.name,
+      token: user.token,
+    });
   } catch (error) {
     console.log(error);
     return res
@@ -218,10 +218,10 @@ const profileUser = async (req, res) => {
 
 const modifyUser = async (req, res) => {
   const { user } = req;
-  const { nombre, apellidos, email, telefono } = req.body;
+  const { name, lastName, email, telefono } = req.body;
 
-  user.nombre = nombre;
-  user.apellidos = apellidos;
+  user.name = name;
+  user.lastName = lastName;
   user.email = email;
   user.telefono = telefono;
 

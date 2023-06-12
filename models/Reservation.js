@@ -2,17 +2,17 @@ import mongoose from "mongoose";
 
 const reservationSchema = mongoose.Schema(
   {
-    usuario: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Usuario",
+      ref: "User",
     },
-    fecha: {
+    date: {
       type: Date,
       required: true,
       trim: true,
       unique: true,
     },
-    corte: {
+    cutType: {
       type: String,
     },
     confirmed: {
@@ -25,5 +25,5 @@ const reservationSchema = mongoose.Schema(
   }
 );
 
-const Reservation = mongoose.model("Reserva", reservationSchema);
+const Reservation = mongoose.model("Reservations", reservationSchema);
 export default Reservation;
