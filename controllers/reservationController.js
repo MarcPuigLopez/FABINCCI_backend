@@ -102,11 +102,12 @@ const addAdminReservation = async (req, res) => {
     res.json(reservationSaved);
 
     const userData = await User.findById(user);
+
     // Enviar mail de confirmación
     emailAdminReservationRegister({
-      email: user.email,
-      name: user.name,
-      lastName: user.lastName,
+      email: userData.email,
+      name: userData.name,
+      lastName: userData.lastName,
       date: reservationSaved.date,
     });
   } catch (error) {

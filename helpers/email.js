@@ -88,8 +88,9 @@ export const emailReservationRegister = async (datos) => {
         <a> A las: ${moment(date).format("HH:mm")}</a>
         <br/>
         <a>Para modificar tu cita puedes acceder a tu perfil en el siguiente enlace</a>
-        <a>o contactar con Fabincci al siguiente número: 999888777</a>
-        <a href="${process.env.FRONTEND_URL}/profile">Ir a mi perfil</a>
+        <a>o contactar con Fabincci al siguiente número: 999888777 <br /></a>
+
+        <a href="${process.env.FRONTEND_URL}/profile">Ir a mi perfil <br /></a>
         
         <p>Si no has hecho la reserva, puedes ignorar este mensaje.</p>
 
@@ -118,11 +119,12 @@ export const emailReservationDelete = async (datos) => {
     text: "Has cancelado tu cita",
     html: ` <p> Hola ${name}. ¡Acabas de cancelar tu reserva del dia ${moment(
       date
-    ).format("DD-MM")}!</p>
+    ).format("DD-MM")} a las ${moment(date).format("HH:mm")} !</p>
         <p> Lamentamos que no puedas asistir a tu corte.</p>
-        <p> A continuación tienes un link para hacer una nueva reserva:</p>
-        <a href="${process.env.FRONTEND_URL}/profile">Ir a mi perfil</a>
-        <br/>
+        <p> A continuación tienes un link para hacer una nueva reserva:<br /></p>
+
+        <a href="${process.env.FRONTEND_URL}/profile">Ir a mi perfil <br/></a>
+
         <a> ¡Esperamos verte pronto en FABINCCI!</a>
 
         `,
@@ -144,17 +146,17 @@ export const emailAdminReservationRegister = async (datos) => {
   const info = await transport.sendMail({
     from: '"Fabincci BarberShop" <admin@fabincci.com>',
     to: email,
-    subject: "Se ha cancelado tu cita",
-    text: "Se ha cancelado tu cita",
-    html: ` <p> Hola ${name}. ¡Se ha cancelado tu reserva del dia ${moment(
+    subject: "Se ha realizado una reserva en FABINCCI",
+    text: "Se ha realizado una reserva en FABINCCI",
+    html: ` <p> Hola ${name}. ¡Se ha realizado una reserva en FABINCCI del dia ${moment(
       date
-    ).format("DD-MM")}!</p>
-        <p> Por motivos personales se ha tenido que cancelar tu reserva, </br></p>
-        <p> Lamentamos las moléstias.</p>
-        <p> A continuación tienes un link para hacer una nueva reserva: </br></p>
-        </br>
-        <a href="${process.env.FRONTEND_URL}/profile">Ir a mi perfil</a>
-        <br/>
+    ).format("DD-MM")} a las ${moment(date).format("HH:mm")} !</p>
+        <p> Fabincci ha reservado esta hora para que vengas a cortarte </br></p>
+        <p> en Fabincci Barber.</p>
+        <p> A continuación tienes un link para ver tus reservas activas: </br></p>
+
+        <a href="${process.env.FRONTEND_URL}/profile">Ir a mi perfil <br/></a>
+
         <a> ¡Esperamos verte pronto en FABINCCI!</a>
 
         `,
